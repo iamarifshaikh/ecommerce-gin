@@ -1,12 +1,12 @@
 package database
 
 import (
-	"ecommerce/models"
+	"ecommerce/models" // Import your models
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -14,41 +14,48 @@ import (
 var DB *gorm.DB
 
 func InitDatabase() {
-	// Load the .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+	// Fetch database credentials from environment variables
+	username := os.Getenv("DB_USERNAME")
+	password := url.QueryEscape(os.Getenv("DB_PASSWORD")) // URL encode the password
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	dbname := os.Getenv("DB_NAME")
+
+	// Check if any required environment variable is missing
+	if username == "" || password == "" || host == "" || port == "" || dbname == "" {
+		log.Fatal("Missing required environment variables for database connection")
 	}
 
-	// Construct the database connection string
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_PORT"),
-	)
+	// Construct the connection string
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=Asia/Shanghai",
+		host, username, password, dbname, port)
 
-	// Open the database connection
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// Connect to the database
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to database! Error: %v", err)
+		log.Fatal("Failed to connect to database:", err)
 	}
 
-	// Assign to global variable before using it
-	DB = database
-	fmt.Println("Database connection established!")
-
-	// Auto-migrate database models
-	err = DB.AutoMigrate(
-		&models.Product{},
+	// Run migrations for all models
+	err = db.AutoMigrate(
 		&models.User{},
-		&models.Admin{},
+		&models.Product{},
 		&models.Order{},
 		&models.Cart{},
 		&models.BlacklistToken{},
+		&models.Admin{},
+		&models.Wishlist{},
 	)
 	if err != nil {
-		log.Fatalf("Error during migration: %v", err)
+		log.Fatal("Failed to migrate database:", err)
 	}
+
+	// Set the global DB variable
+	DB = db
+	log.Println("Successfully connected and migrated the database!")
+}
+
+// GetDB returns the database instance
+func GetDB() *gorm.DB {
+	return DB
 }

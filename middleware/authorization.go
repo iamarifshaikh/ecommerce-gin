@@ -11,55 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// func AdminOnly() gin.HandlerFunc {
-// 	return func(c *gin.Context) {
-// 		token := c.GetHeader("Authorization")
-// 		fmt.Println("Raw Token from Header:", token) // Debugging line
-// 		if token == "" {
-// 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Token not provided!"})
-// 			c.Abort()
-// 			return
-// 		}
-
-// 		// Remove "Bearer " prefix if present
-// 		if len(token) > 7 && token[:7] == "Bearer " {
-// 			token = token[7:] // Extract only the actual token
-// 		}
-
-// 		fmt.Println("Extracted Token:", token) // Debugging line
-
-// 		// Validate token and fetch user
-// 		userID, err := utils.ParseToken(token)
-// 		if err != nil {
-// 			fmt.Println("Token parsing error:", err) // Debugging line
-// 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
-// 			c.Abort()
-// 			return
-// 		}
-
-// 		fmt.Println("Token parsed successfully. User ID:", userID) // Debugging line
-
-// 		// Find user by ID and check role
-// 		var user models.User
-// 		if err := database.DB.First(&user, userID).Error; err != nil {
-// 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token or user not found!"})
-// 			c.Abort()
-// 			return
-// 		}
-
-// 		// Check if the user is an Admin
-// 		if user.Role != "Admin" {
-// 			c.JSON(http.StatusForbidden, gin.H{"message": "Access restricted to admins!"})
-// 			c.Abort()
-// 			return
-// 		}
-
-// 		// Set user in context for downstream handlers
-// 		c.Set("user", user)
-// 		c.Next()
-// 	}
-// }
-
 func AdminOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Get the raw header
