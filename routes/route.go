@@ -24,7 +24,7 @@ func SetupRoutes(router *gin.Engine) {
 	router.DELETE("/wishlist/:wishlist_id", middleware.AuthRequired(), controllers.RemoveFromWishlist) // Remove item from wishlist
 
 	// Cart routes
-	router.POST("/cart", controllers.AddToCart)
-	router.GET("/cart/:user_id", controllers.ViewCart)
-	router.DELETE("/cart/:user_id/:cart_id", controllers.RemoveFromCart)
+	router.POST("/cart", middleware.AuthRequired(), controllers.AddToCart)
+	router.GET("/cart/:user_id", middleware.AuthRequired(), controllers.ViewCart)
+	router.DELETE("/cart/:user_id/:cart_id", middleware.AuthRequired(), controllers.RemoveFromCart)
 }
