@@ -18,6 +18,9 @@ func main() {
 	// Connect to the database
 	database.InitDatabase()
 
+	// Seed categories if needed (you can comment this out after the first run)
+	database.SeedCategories()
+
 	// Initialize the Gin router
 	r := gin.Default()
 

@@ -45,6 +45,7 @@ func InitDatabase() {
 		&models.BlacklistToken{},
 		&models.Admin{},
 		&models.Wishlist{},
+		&models.Category{},
 	)
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
